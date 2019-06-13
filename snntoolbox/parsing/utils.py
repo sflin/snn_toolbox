@@ -33,6 +33,7 @@ connectivity and layer attributes:
 """
 
 from abc import abstractmethod
+from snntoolbox.utils.utils import precision
 
 import keras
 import numpy as np
@@ -658,7 +659,8 @@ class AbstractModelParser:
         # Optimizer and loss do not matter because we only do inference.
         self.parsed_model.compile(
             'sgd', 'categorical_crossentropy',
-            ['accuracy', keras.metrics.top_k_categorical_accuracy])
+            self.input_model.metrics) # use this line of code for custom metrics
+            #['accuracy', keras.metrics.top_k_categorical_accuracy]) 
 
         return self.parsed_model
 
@@ -1205,4 +1207,5 @@ def get_custom_activations_dict():
     return {'binary_sigmoid': binary_sigmoid,
             'binary_tanh': binary_tanh,
             'clamped_relu': ClampedReLU(),  # Todo: This should work regardless of the specific attributes of the ClampedReLU class used during training.
-            activation_str: activation}
+            activation_str: activation,
+            'precision' : precision}

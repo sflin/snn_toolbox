@@ -18,7 +18,7 @@ import numpy as np
 
 from snntoolbox.bin.utils import get_log_keys, get_plot_keys
 from snntoolbox.parsing.utils import get_type
-from snntoolbox.utils.utils import echo
+from snntoolbox.utils.utils import echo, precision
 import keras
 
 
@@ -637,9 +637,13 @@ class AbstractSNN:
             # Print current accuracy.
             num_samples_seen = (batch_idx + 1) * self.batch_size
             top1acc_moving = np.mean(np.array(truth_d) == np.array(guesses_d))
-            top5score_moving += sum(in_top_k(output_b_l_t[:, :, -1], truth_b,
+            # use the following lines top5acc_moving for custom metrics:
+            top5acc_moving = keras.backend.get_value(
+                    precision(keras.backend.constant(truth_d), 
+                              keras.backend.constant(guesses_d)))    
+            """top5score_moving += sum(in_top_k(output_b_l_t[:, :, -1], truth_b,
                                              self.top_k))
-            top5acc_moving = top5score_moving / num_samples_seen
+            top5acc_moving = top5score_moving / num_samples_seen"""
             print("\nBatch {} of {} completed ({:.1%})".format(
                 batch_idx + 1, num_batches, (batch_idx + 1) / num_batches))
             print("Moving accuracy of SNN (top-1, top-{}): {:.2%}, {:.2%}."

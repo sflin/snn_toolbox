@@ -496,6 +496,17 @@ def in_top_k(predictions, targets, k):
     return np.array([np.equal(p, t).any() for p, t in zip(predictions_top_k,
                                                           targets)])
 
+def precision(y_true, y_pred):
+    """Precision metric.
+    Only computes a batch-wise average of precision.
+    Computes the precision, a metric for multi-label classification of
+    how many selected items are relevant.
+    """
+
+    true_positives = keras.backend.sum(keras.backend.round(keras.backend.clip(y_true * y_pred, 0, 1)))
+    predicted_positives = keras.backend.sum(keras.backend.round(keras.backend.clip(y_pred, 0, 1)))
+    precision = true_positives / (predicted_positives + keras.backend.epsilon())
+    return precision
 
 def top_k_categorical_accuracy(y_true, y_pred, k=5):
     """
